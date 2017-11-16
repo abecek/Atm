@@ -27,6 +27,8 @@ public:
 	Address();
 	Address(std::string country, std::string city, std::string street, std::string number, PostCode *pc = nullptr);
 	void setPostCode(std::string content);
+	PostCode* getPostCode();
+	std::string getPostCodeAsString();
 	std::string toString();
 	virtual ~Address();
 protected:

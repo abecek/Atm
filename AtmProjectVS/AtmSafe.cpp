@@ -8,8 +8,12 @@ AtmSafe::AtmSafe()
 
 AtmSafe::AtmSafe(std::map<unsigned int, unsigned int> safeContent, std::string currency)
 {
-	this->content = content;
 	this->currency = currency;
+	for (auto it = safeContent.begin(); it != safeContent.end(); it++) {
+		this->content[it->first] = it->second;
+	}
+
+	this->countContent();
 }
 
 unsigned int AtmSafe::getMoneyAmount()
@@ -73,7 +77,9 @@ float AtmSafe::getMedian()
 
 bool AtmSafe::checkAmountIsPossibleToWithdraw(unsigned int amount)
 {
-	if (amount % this->content[0] != 0) return false;
+	if (this->moneyAmount < amount) return false;
+	if (amount == 0) return false;
+	//if (amount % this->content[0] != 0) return false;
 
 	return true;
 }
@@ -129,11 +135,11 @@ bool AtmSafe::getMoneyFromSafe(const unsigned int amount)
 
 				// todo: I suppose there is a reason why these amounts above arent working
 				// have to add next condition (tempDiv > 1)
-				if (tempDiv >= 1) {
+				if (tempDiv >= 1 && tempDiv < 2) {
 					temp[it2->first] = tempDiv;
 					papersCount += tempDiv;
-					tempAmount -= tempDiv*it2->first;
-				}				
+					tempAmount -= tempDiv*it2->first;			
+				}		
 
 				if (it2 == this->content.begin()) break;
 				it2--;
@@ -262,27 +268,32 @@ std::map<unsigned int, unsigned int>* AtmSafe::chooseProperWithdraw()
 	//For tests
 	/*if (chosenOne) {
 		this->printAnyContent(*chosenOne);
-	}*/
-	
-	
+	}*/	
 
 	return chosenOne;
 }
 
 bool AtmSafe::proceedWithdraw(std::map<unsigned int, unsigned int> *withdrawArray)
 {
+	bool flag = true;
 	if (withdrawArray) {
 		for (auto it = withdrawArray->begin(); it != withdrawArray->end(); it++) {
-			this->content.at(it->first) -= it->second;
+			if (this->content.at(it->first) >= it->second) {
+				this->content.at(it->first) -= it->second;
+			}
+			else {
+				flag = false;
+				break;
+			}
 		}
 	}
 	else {
-		return false;
+		flag = false;
 	}
 	
 	this->possibleWithdrawArray.clear();
 
-	return true;
+	return flag;
 }
 
 void AtmSafe::printSafe()

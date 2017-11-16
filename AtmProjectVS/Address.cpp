@@ -17,13 +17,26 @@ Address::Address(std::string country, std::string city, std::string street, std:
 	//ctor
 }
 
-void Address::setPostCode(std::string content) {
+
+void Address::setPostCode(std::string content)
+{
 	PostCode *ps = new PostCode();
 	ps->setPostCodeFromString(content);
 	this->postCode = ps;
 }
 
-std::string Address::toString() {
+PostCode* Address::getPostCode() 
+{
+	return this->postCode;
+}
+
+std::string Address::getPostCodeAsString()
+{
+	return postCode->getPostCodeAsString();
+}
+
+std::string Address::toString()
+{
 	std::string output = "";
 	if (this->postCode == nullptr) {
 		output += " Address - Country: " + this->country;
