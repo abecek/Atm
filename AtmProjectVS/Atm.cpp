@@ -155,11 +155,14 @@ void Atm::addSupportedCompanyToList(Company *comp)
 
 bool Atm::makeWithdraw(unsigned int amount, bool printContribution)
 {
+	this->safe->getMoneyFromSafe2(amount);
+	/*
 	if (this->safe->getMoneyFromSafe(amount)) {
 		Company *comp = this->supportedCompaniesList.at(this->card->getCardDistributorId());
 		comp->getMoneyFromAccount(this->card->getAccountNumber(), (float)amount);
 		return true;
 	}
+	*/
 	return false;
 }
 

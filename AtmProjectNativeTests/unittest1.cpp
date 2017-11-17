@@ -3,6 +3,7 @@
 
 #include "Atm.h"
 #include "ToString.h"
+#include <string>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -97,17 +98,45 @@ namespace AtmProjectNativeTests
 					{ 500, 10 },
 				};
 				AtmSafe* safe = new AtmSafe(safeContent);
-				unsigned int inSafe = safe->getMoneyAmount();
+				unsigned int inSafeAmount = safe->getMoneyAmount();
 
-				unsigned int possibleValue = (inSafe - 500);
+				unsigned int possibleValue = (inSafeAmount - 500);
 				Assert::IsTrue(safe->checkAmountIsPossibleToWithdraw(possibleValue), L"This value should be possible to withdraw.", LINE_INFO());
 
-				unsigned int impossibleValue = (inSafe + 500);
+				unsigned int impossibleValue = (inSafeAmount + 500);
 				Assert::IsFalse(safe->checkAmountIsPossibleToWithdraw(impossibleValue), L"This value should not be possible to withdraw.", LINE_INFO());
 
 				impossibleValue = 0;
 				Assert::IsFalse(safe->checkAmountIsPossibleToWithdraw(impossibleValue), L"Division by 0 is not allowed.", LINE_INFO());
 				// todo: add more possiblities to the AtmSafe::checkAmountIsPossibleToWithdraw(unsigned int amount) and next tests here...
+			}
+
+			TEST_METHOD(getMoneyFromSafeTests)
+			{
+				/*
+				std::map<unsigned int, unsigned int> safeContent = {
+					{ 20, 10 },
+					{ 50, 10 },
+					{ 100, 10 },
+					{ 200, 10 },
+					{ 500, 10 },
+				};
+				AtmSafe* safe = new AtmSafe(safeContent);
+
+
+				std::vector<unsigned int> moneyValues = {
+					20,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,210,220,230,
+					240,250,260,270,280,290,300,310,320,330,340,350,360,370,380,390,400,410,420
+				};
+
+				for (auto const& value : moneyValues) {
+					std::wstring strVal = std::to_wstring(value);
+					std::wstring str = L"Value: " + strVal;
+					str += L" should be possible to withdraw.";
+					Assert::IsTrue(safe->getMoneyFromSafe(value), str.c_str(), LINE_INFO());
+				}
+				*/
+
 			}
 
 			TEST_METHOD(areWithdrawsPossibleTest)

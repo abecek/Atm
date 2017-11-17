@@ -135,7 +135,7 @@ bool AtmSafe::getMoneyFromSafe(const unsigned int amount)
 
 				// todo: I suppose there is a reason why these amounts above arent working
 				// have to add next condition (tempDiv > 1)
-				if (tempDiv >= 1 && tempDiv < 2) {
+				if (tempDiv >= 1) {
 					temp[it2->first] = tempDiv;
 					papersCount += tempDiv;
 					tempAmount -= tempDiv*it2->first;			
@@ -172,6 +172,113 @@ bool AtmSafe::getMoneyFromSafe(const unsigned int amount)
 
 	std::map<unsigned int, unsigned int> *arrayToWithdraw = this->chooseProperWithdraw();
 	return this->proceedWithdraw(arrayToWithdraw);
+}
+
+unsigned int AtmSafe::getNominalCount(unsigned int amount) {
+	return 0;
+}
+
+unsigned int AtmSafe::getRowPos(unsigned int x)
+{
+	for (int i = 1; i < temporary->size(); i++) {
+		if (temporary->at(i).at(0) == x) {
+			return i;
+		}
+	}
+	return 0;
+}
+
+unsigned int AtmSafe::getColPos(unsigned int x)
+{
+	for (int i = 1; i < temporary->size(); i++) {
+		if (temporary->at(0).at(i) == x) {
+			return i;
+		}
+	}
+	return 0;
+}
+
+unsigned int AtmSafe::getRest(unsigned int amount, unsigned int posX, unsigned int posY)
+{
+	unsigned int multipiler = temporary->at(posX).at(posY);
+	return (amount - (temporary->at(posX).at(0) * multipiler));
+}
+
+bool AtmSafe::getMoneyFromSafe2(const unsigned int amount)
+{
+	if (amount % 10 != 0) return false;
+	unsigned int colsAmount = (amount / 10);
+	unsigned int size = 0;
+	for (auto const& temp : this->content) {
+		if (amount >= temp.first) {
+			size++;
+		}
+	}
+	this->temporary = new std::vector<std::vector<int>>(size + 1, std::vector<int>(colsAmount + 1));
+
+	int k = 1;
+	for (auto const& temp : this->content) {
+		if(amount >= temp.first) {
+			temporary->at(k)[0] = temp.first;
+			k++;
+		}
+	}
+
+	int val = 10;
+	for (int j = 1; j < temporary->at(0).size(); j++) {
+		temporary->at(0)[j] = val;
+		val += 10;
+	}
+
+	for (int i = 1; i < temporary->size(); i++) {
+		for (int j = 1; j < temporary->at(0).size(); j++) {
+			int colLabel = temporary->at(0).at(j);
+			int rowLabeL = temporary->at(i).at(0);
+			int div = (int)floor(colLabel/rowLabeL);
+			temporary->at(i)[j] = div;
+		}
+	}
+
+	this->printAnyVector(temporary);
+	
+	unsigned int counter = 0;
+	unsigned int rest = 0;
+	
+	int multipiler = 0;
+	do {
+		int rowNr = temporary->size() - 1;
+		int colNr = temporary->at(0).size() - 1;
+		std::map<unsigned int, std::map<unsigned int, unsigned int>> temp;
+		std::vector<int, int> tempVec;
+		int rowNext = 0;
+		int colNext = 0;
+		
+
+
+		unsigned int tempAmount = amount;
+		rest = amount;
+		
+		for (int i = rowNr; i > 0; i--) {
+			for (int j = colNr; j > 0; j--) {
+				multipiler = temporary->at(i)[j];
+				if (multipiler != 0) {
+					rowNext = temporary->at(i)[0];
+					colNext = temporary->at(0)[j];
+
+					rest -= this->getRest(amount, i, j);
+				}
+			}
+		}
+		counter++;
+	} while (rest != 0);
+
+	std::cout << "Counter: " << counter << std::endl;
+	
+
+	
+	
+
+	return true;
 }
 
 bool AtmSafe::checkIsWithdrawPossible(std::map<unsigned int, unsigned int> &temp)
@@ -315,6 +422,23 @@ void AtmSafe::printAnyContent(std::map<unsigned int, unsigned int> &temp)
 		std::cout << it->first << " - " << it->second << std::endl;
 		it++;
 	}
+}
+
+void AtmSafe::printAnyVector(std::vector<std::vector<int>>* vec)
+{
+	std::cout << "Array height: " << vec->size() << ", width: " << vec->at(0).size() << std::endl;
+	for (int i = 0; i < vec->size(); i++) {
+		std::cout << std::endl;
+		if (i == 0) std::cout << "  ";
+		if (i == 1 || i == 2) std::cout << " ";
+		for (int j = 0; j < vec->at(i).size(); j++) {
+			std::cout << vec->at(i)[j] << " "; 
+			if (i != 0) std::cout << " ";
+			if (j >= 9 && i != 0) std::cout << " ";
+		}
+	}
+	std::cout << std::endl;
+
 }
 
 void AtmSafe::printAnyContent2()
